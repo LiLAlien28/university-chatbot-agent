@@ -1,0 +1,47 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: university-chatbot-agent
+  namespace: default
+  labels:
+    cloud.google.com/location: us-central1
+spec:
+  template:
+    metadata:
+      annotations:
+        # Scale settings for cost-efficiency (cold starts enabled)
+        autoscaling.knative.dev/maxScale: "3"
+        autoscaling.knative.dev/minScale: "0"
+    spec:
+      containers:
+        - image: gcr.io/your-project-id/university-chatbot-agent:latest
+          ports:
+            - containerPort: 8501
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+          env:
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gemini-api-key
+                  key: latest
+            - name: SQLITE_DB_PATH
+              value: "/data/university_chatbot.db"
+            - name: CHROMADB_DIR
+              value: "/data/chroma_db"
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: session-secret
+                  key: latest
+          volumeMounts:
+            - name: app-data-storage
+              mountPath: /data
+      volumes:
+        # Persistent storage volume for ChromaDB and SQLite records
+        - name: app-data-storage
+          gcs:
+            bucket: your-persistent-storage-bucket
+            readonly: false

@@ -1,0 +1,10 @@
+google-adk>=2.0.0
+mcp>=1.0.0
+fastmcp>=0.1.0
+google-genai>=0.1.0
+streamlit>=1.30.0
+chromadb>=0.4.22
+bcrypt>=4.1.0
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+pypdf>=4.0.0
